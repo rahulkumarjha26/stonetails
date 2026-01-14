@@ -531,6 +531,7 @@
     </nav>
 
     <div id="canvas-container"></div>
+    <img id="marcus-source" src="src/assets/marcus.jpeg" style="display:none;">
 
     <main>
         <!-- Hero -->
@@ -934,7 +935,8 @@
 
         // Load Marcus Image
         const marcusImg = new Image();
-        marcusImg.src = 'src/assets/marcus.jpeg';
+        const marcusSource = document.getElementById('marcus-source');
+        marcusImg.src = marcusSource ? marcusSource.src : 'src/assets/marcus.jpeg';
         let marcusLoaded = false;
         marcusImg.onload = () => { marcusLoaded = true; };
 
