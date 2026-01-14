@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stone Tails | The Artifact</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&amp;family=Inter:wght@300;400;500&amp;display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* REFINED PALETTE: Stoic Luxury */
+            --bg-deep: #050505;
+            /* Pure void */
+            --bg-subtle: #0f1012;
+            /* Dark slate */
+
+            --stone-grey: #4a4e52;
+            /* True Grey Stone */
+            --stone-dark: #1a1b1d;
+
+            --gold-champagne: #d4c5a3;
+            /* Elegant, desaturated gold */
+            --gold-muted: #8c826b;
+
+            --text-main: #e8e8e8;
+            --text-muted: #888890;
+
+            /* Magic Pop */
+            --magic-glow: #b084cc;
+            --magic-core: #e0c3fc;
+
+            --ease-lux: cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .hero-title {
+            font-size: clamp(3.5rem, 14vw, 11rem);
+            line-height: 1.2;
+            padding-bottom: 0.1em;
+            color: var(--text-main);
+            background: linear-gradient(to bottom, #fff, #999);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 6vw, 4.5rem);
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+
+        .eyebrow {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--gold-champagne);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 500;
+        }
+
+        .eyebrow::before {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: var(--gold-champagne);
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        p strong {
+            color: var(--text-main);
+            font-weight: 400;
+        }
+
+        /* Canvas */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        main {
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            position: relative;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            pointer-events: auto;
+            padding: 0 clamp(1.5rem, 5vw, 4rem);
+        }
+
+        section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .interaction-stage {
+            height: 150vh;
+            pointer-events: none;
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem clamp(1.5rem, 5vw, 4rem);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--text-main);
+        }
+
+        .edition-tag {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* Hero */
+        .hero-section {
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-content {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-tagline {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+            margin-top: 2rem;
+            text-transform: uppercase;
+        }
+
+        /* Text Layouts */
+        .text-block {
+            max-width: 420px;
+            padding: 2rem 0;
+        }
+
+        .text-block.left {
+            margin-right: auto;
+        }
+
+        .text-block.right {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .text-block.right .eyebrow {
+            justify-content: flex-end;
+        }
+
+        .text-block.right .eyebrow::before {
+            order: 1;
+        }
+
+        .connection-text {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        /* Oracle Card */
+        .oracle-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        .oracle-card {
+            background: rgba(15, 16, 18, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 197, 163, 0.15);
+            padding: clamp(3rem, 6vw, 4rem);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(40px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quote {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+            color: var(--text-main);
+            margin: 2rem 0;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        .author {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold-champagne);
+            margin-bottom: 2rem;
+        }
+
+        .btn-talk {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--text-muted);
+            padding: 0.8rem 2rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 50px;
+        }
+
+        .btn-talk:hover {
+            border-color: var(--gold-champagne);
+            color: var(--gold-champagne);
+            background: rgba(212, 197, 163, 0.05);
+        }
+
+        /* Video Section - Tight Fit */
+        .video-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 80px;
+            /* Space for purchase bar */
+        }
+
+        .video-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 1000px;
+            aspect-ratio: 16/9;
+            background: var(--bg-subtle);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1b1d 0%, #050505 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Play Button */
+        .play-button-outer {
+            width: 90px;
+            height: 90px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .play-button-inner {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--gold-champagne);
+            transition: all 0.3s ease;
+        }
+
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 12px solid var(--gold-champagne);
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            margin-left: 4px;
+        }
+
+        .play-button-outer:hover .play-button-inner {
+            background: var(--gold-champagne);
+            transform: scale(1.1);
+        }
+
+        .play-button-outer:hover .play-icon {
+            border-left-color: var(--bg-deep);
+        }
+
+        .video-caption {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            opacity: 0;
+        }
+
+        /* Purchase Bar */
+        .purchase-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem clamp(1.5rem, 5vw, 4rem);
+            background: rgba(5, 5, 5, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 90;
+            transform: translateY(100%);
+            transition: transform 0.8s var(--ease-lux);
+        }
+
+        .purchase-bar.visible {
+            transform: translateY(0);
+        }
+
+        .purchase-info h3 {
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 0.2rem;
+        }
+
+        .purchase-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .btn-primary {
+            background: var(--gold-champagne);
+            color: var(--bg-deep);
+            border: none;
+            padding: 1rem 2.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #fff;
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .loader-bar-container {
+            width: 100px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .loader-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--gold-champagne);
+        }
+
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+            pointer-events: none;
+            z-index: 98;
+        }
+
+        .nfc-flash {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(176, 132, 204, 0.2) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 97;
+            opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .purchase-bar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 1.5rem;
+            }
+
+            .text-block.right {
+                text-align: left;
+            }
+
+            .text-block.right .eyebrow {
+                justify-content: flex-start;
+            }
+
+            .text-block.right .eyebrow::before {
+                order: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="loader" id="loader">
+        <div class="brand">Stone Tails</div>
+        <div class="loader-bar-container">
+            <div class="loader-bar" id="loader-bar"></div>
+        </div>
+    </div>
+
+    <div class="vignette"></div>
+    <div class="nfc-flash" id="nfc-flash"></div>
+
+    <nav class="nav">
+        <div class="brand">Stone Tails</div>
+        <div class="nav-right" style="display: flex; gap: 2rem; align-items: center;">
+            <button id="lang-toggle"
+                style="background: none; border: none; color: var(--text-muted); font-family: 'Inter', sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; cursor: pointer; text-transform: uppercase;">IT
+                / EN</button>
+            <div class="edition-tag">No. 001 / 100</div>
+        </div>
+    </nav>
+
+    <div id="canvas-container"></div>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero-section">
+            <div class="content-wrapper hero-content" id="hero-content">
+                <h1 class="hero-title">
+                    <span class="line"><span class="word" data-i18n="heroTitle1">Indossa</span></span>
+                    <span class="line"><span class="word" data-i18n="heroTitle2">la Leggenda</span></span>
+                </h1>
+                <p class="hero-tagline" data-i18n="heroTagline">Filosofia da toccare con mano</p>
+            </div>
+        </section>
+
+        <!-- The Stone -->
+        <section>
+            <div class="content-wrapper">
+                <div class="text-block left">
+                    <span class="eyebrow" data-i18n="stoneEyebrow">La Barriera</span>
+                    <h2 class="section-title" data-i18n="stoneTitle">Forgiato nell'<br>Eternità</h2>
+                    <p data-i18n="stoneText">Scolpito nel basalto vulcanico. <strong>Grigio. Denso.
+                            Irremovibile.</strong> Un monumento al peso della storia che portiamo, in attesa di essere
+                        infranto.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Artifact -->
+        <section>
+            <div class="content-wrapper">
+                <div class="text-block right">
+                    <span class="eyebrow" data-i18n="artifactEyebrow">L'Artefatto</span>
+                    <h2 class="section-title" data-i18n="artifactTitle">Viola<br>Vivente</h2>
+                    <p data-i18n="artifactText">Sospeso nel peltro, un nucleo di <strong>energia luminescente</strong>
+                        pulsa al ritmo del pensiero. Non brilla soltanto; comunica.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Connection Intro -->
+        <section>
+            <div class="content-wrapper">
+                <div class="connection-text" id="connection-text">
+                    <span class="eyebrow" style="justify-content: center;" data-i18n="connectionEyebrow">La
+                        Connessione</span>
+                    <h2 class="section-title" data-i18n="connectionTitle">Risveglia<br>il Mentore</h2>
+                    <p data-i18n="connectionText">Avvicina il tuo telefono per colmare il divario.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interaction Stage -->
+        <section class="interaction-stage"></section>
+
+        <!-- Oracle Result -->
+        <section class="oracle-section">
+            <div class="content-wrapper">
+                <div class="oracle-card" id="oracle-card">
+                    <span class="eyebrow" data-i18n="oracleEyebrow">L'Oracolo Parla</span>
+                    <p class="quote" data-i18n="oracleQuote">"Hai potere sulla tua mente, non sugli eventi esterni.
+                        Realizzalo e troverai la forza."</p>
+                    <span class="author">Marcus Aurelius</span>
+                    <a href="/talk/" class="btn-talk" data-i18n="btnTalk">Parla con Marco →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video -->
+        <section class="video-section">
+            <div class="content-wrapper">
+                <div class="video-wrapper">
+                    <div class="video-container">
+                        <video class="video-placeholder" controls>
+                            <source src="src/assets/product-demo.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div class="video-caption" data-i18n="videoCaption">L'Artefatto in Movimento</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="purchase-bar" id="purchase-bar">
+        <div class="purchase-info">
+            <h3 data-i18n="purchaseTitle">L'Artefatto — Serie Uno</h3>
+            <span class="purchase-meta" data-i18n="purchaseMeta">Limitato a 100 pezzi · Spedizione Feb 2026</span>
+        </div>
+        <button class="btn-primary" data-i18n="purchaseBtn">Fallo Tuo — $299</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // === CONFIG: STOIC GREY & CHAMPAGNE ===
+        const config = {
+            colors: {
+                bg: 0x050505,
+                // Grey stone colors
+                stoneBase: 0x4a4e52,
+                stoneDark: 0x2b2e31,
+                // Lights
+                ambient: 0x202225,
+                spotWarm: 0xfff0dd, // Champagne light
+                rimCool: 0x5a6e8c,  // Blue-grey rim light to emphasize grey stone
+                // Magic
+                magicCore: 0xe0c3fc,
+                magicGlow: 0x9d4edd
+            }
+        };
+
+        const state = {
+            mouse: { x: 0, y: 0 },
+            targetMouse: { x: 0, y: 0 },
+            cuboidIntegrity: 1,
+            artifactReveal: 0,
+            nfcConnection: 0,
+            screenBrightness: 0,
+            time: 0
+        };
+
+        // === LOADER ===
+        const loaderBar = document.getElementById('loader-bar');
+        function updateLoader(p) { loaderBar.style.width = Math.min(p, 100) + '%'; }
+
+        // === SCROLL ===
+        const lenis = new Lenis({ duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // === THREE.JS ===
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(config.colors.bg);
+        scene.fog = new THREE.FogExp2(config.colors.bg, 0.05);
+
+        const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 10);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        updateLoader(20);
+
+        // === LIGHTS ===
+        // 1. Cool Ambient (makes shadows grey, not black)
+        scene.add(new THREE.AmbientLight(config.colors.ambient, 0.6));
+
+        // 2. Main Key Light (Champagne/White)
+        const keyLight = new THREE.SpotLight(config.colors.spotWarm, 1.2);
+        keyLight.position.set(5, 5, 8);
+        keyLight.castShadow = true;
+        scene.add(keyLight);
+
+        // 3. Cool Rim Light (Defines the grey stone edges)
+        const rimLight = new THREE.PointLight(config.colors.rimCool, 0.8);
+        rimLight.position.set(-5, 2, -5);
+        scene.add(rimLight);
+
+        // 4. Interactive Lights
+        const cuboidGlow = new THREE.PointLight(0xd4c5a3, 0, 4);
+        cuboidGlow.position.set(0, 0, 3);
+        scene.add(cuboidGlow);
+
+        const nfcLight = new THREE.PointLight(config.colors.magicGlow, 0, 8);
+        scene.add(nfcLight);
+
+        // === MATERIALS ===
+        // GREY STONE MATERIAL
+        // PREMIUM GREY STONE MATERIAL - Base template
+        const stoneMat = new THREE.MeshStandardMaterial({
+            color: config.colors.stoneBase,
+            roughness: 0.85,
+            metalness: 0.08,
+            flatShading: false
+        });
+
+        // Create chamfered box geometry for premium look
+        function createChamferedBox(w, h, d, bevel = 0.015) {
+            const shape = new THREE.Shape();
+            const hw = w / 2 - bevel;
+            const hh = h / 2 - bevel;
+            shape.moveTo(-hw, -h / 2);
+            shape.lineTo(hw, -h / 2);
+            shape.lineTo(w / 2, -hh);
+            shape.lineTo(w / 2, hh);
+            shape.lineTo(hw, h / 2);
+            shape.lineTo(-hw, h / 2);
+            shape.lineTo(-w / 2, hh);
+            shape.lineTo(-w / 2, -hh);
+            shape.closePath();
+            const settings = { steps: 1, depth: d, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 2 };
+            const geo = new THREE.ExtrudeGeometry(shape, settings);
+            geo.translate(0, 0, -d / 2);
+            geo.computeVertexNormals();
+            return geo;
+        }
+
+        const pewterMat = new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.4, metalness: 0.9 });
+        const chainMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.3, metalness: 0.8 });
+
+        // === OBJECTS ===
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        // 1. CUBOID (THE STONE) - Premium Fragments
+        const cuboidGroup = new THREE.Group();
+        mainGroup.add(cuboidGroup);
+        const fragments = [];
+
+        // Dust particle system for premium breaking effect
+        const dustCount = 200;
+        const dustGeo = new THREE.BufferGeometry();
+        const dustPositions = new Float32Array(dustCount * 3);
+        const dustVelocities = [];
+        const dustOpacities = new Float32Array(dustCount);
+        for (let i = 0; i < dustCount; i++) {
+            dustPositions[i * 3] = (Math.random() - 0.5) * 2;
+            dustPositions[i * 3 + 1] = (Math.random() - 0.5) * 1.5;
+            dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 1;
+            dustVelocities.push(new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                Math.random() * 0.5 + 0.2,
+                (Math.random() - 0.5) * 1.5
+            ));
+            dustOpacities[i] = 0;
+        }
+        dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+        const dustMat = new THREE.PointsMaterial({
+            color: 0x6a6e72,
+            size: 0.025,
+            transparent: true,
+            opacity: 0,
+            blending: THREE.NormalBlending,
+            depthWrite: false
+        });
+        const dustParticles = new THREE.Points(dustGeo, dustMat);
+        cuboidGroup.add(dustParticles);
+
+        // Create 5x5x4 grid of premium stone fragments
+        const cSize = { x: 3.5, y: 2.5, z: 1.8 }; // Enlarged for spectacular visual
+        const gridX = 5, gridY = 5, gridZ = 4;
+        const fragW = cSize.x / gridX, fragH = cSize.y / gridY, fragD = cSize.z / gridZ;
+
+        for (let x = 0; x < gridX; x++) {
+            for (let y = 0; y < gridY; y++) {
+                for (let z = 0; z < gridZ; z++) {
+                    // Unique premium material per fragment
+                    const localMat = stoneMat.clone();
+                    // Varied grey tones - some darker, some lighter
+                    const hueShift = (Math.random() - 0.5) * 0.02; // Subtle warm/cool shift
+                    const satShift = (Math.random() - 0.5) * 0.05;
+                    const lightShift = (Math.random() - 0.5) * 0.15;
+                    localMat.color.offsetHSL(hueShift, satShift, lightShift);
+                    localMat.roughness = 0.75 + Math.random() * 0.2;
+                    localMat.metalness = 0.05 + Math.random() * 0.1;
+
+                    // Add size variation (0.7x to 1.0x)
+                    const sizeVar = 0.7 + Math.random() * 0.3;
+                    const geo = createChamferedBox(
+                        fragW * sizeVar,
+                        fragH * sizeVar,
+                        fragD * sizeVar,
+                        0.012
+                    );
+                    const mesh = new THREE.Mesh(geo, localMat);
+
+                    const jx = (x - (gridX - 1) / 2) * fragW;
+                    const jy = (y - (gridY - 1) / 2) * fragH;
+                    const jz = (z - (gridZ - 1) / 2) * fragD;
+                    mesh.position.set(jx, jy, jz);
+                    // Slight initial rotation variation
+                    mesh.rotation.set(
+                        (Math.random() - 0.5) * 0.05,
+                        (Math.random() - 0.5) * 0.05,
+                        (Math.random() - 0.5) * 0.05
+                    );
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
+
+                    // Physics-like explosion data
+                    const distFromCenter = Math.sqrt(jx * jx + jy * jy + jz * jz);
+                    const explosionDir = new THREE.Vector3(jx, jy, jz).normalize();
+                    // Add upward bias and randomization
+                    explosionDir.y += 0.3 + Math.random() * 0.4;
+                    explosionDir.x += (Math.random() - 0.5) * 0.6;
+                    explosionDir.z += (Math.random() - 0.5) * 0.8;
+                    explosionDir.normalize();
+
+                    mesh.userData = {
+                        pos: mesh.position.clone(),
+                        initialRot: mesh.rotation.clone(),
+                        dir: explosionDir,
+                        // Outer fragments move faster
+                        speed: 0.6 + distFromCenter * 0.4 + Math.random() * 0.4,
+                        // Staggered delay based on distance from center
+                        delay: distFromCenter * 0.12 + Math.random() * 0.15,
+                        // Tumble rotation speeds
+                        tumbleX: (Math.random() - 0.5) * 8,
+                        tumbleY: (Math.random() - 0.5) * 8,
+                        tumbleZ: (Math.random() - 0.5) * 6,
+                        // Gravity influence
+                        gravity: 0.3 + Math.random() * 0.2
+                    };
+                    cuboidGroup.add(mesh);
+                    fragments.push(mesh);
+                }
+            }
+        }
+        updateLoader(50);
+
+        // 2. ARTIFACT
+        const artifactGroup = new THREE.Group();
+        mainGroup.add(artifactGroup);
+        artifactGroup.visible = false;
+
+        // Pendant
+        const knot = new THREE.Mesh(new THREE.TorusKnotGeometry(0.5, 0.08, 128, 16), pewterMat);
+        artifactGroup.add(knot);
+
+        // CHAIN (HANGING FROM TOP)
+        const chainGroup = new THREE.Group();
+        artifactGroup.add(chainGroup);
+        // Generate links going UP from the pendant
+        for (let i = 0; i < 25; i++) {
+            const link = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.015, 8, 16), chainMat);
+            // Stack them vertically
+            link.position.y = 0.6 + (i * 0.1);
+            // Rotate every other link 90 degrees
+            link.rotation.y = (i % 2) * (Math.PI / 2);
+            chainGroup.add(link);
+        }
+
+        // Orb Shader
+        const orbMat = new THREE.ShaderMaterial({
+            uniforms: {
+                uTime: { value: 0 },
+                uIntensity: { value: 0 },
+                uColorCore: { value: new THREE.Color(config.colors.magicCore) },
+                uColorHot: { value: new THREE.Color(config.colors.magicGlow) }
+            },
+            transparent: true,
+            vertexShader: `
+                varying vec3 vPos; varying float vFresnel; uniform float uTime; uniform float uIntensity;
+                void main() {
+                    vPos = position;
+                    vec3 viewDir = normalize(cameraPosition - (modelMatrix * vec4(position,1.)).xyz);
+                    vec3 norm = normalize(normalMatrix * normal);
+                    vFresnel = pow(1.0 - abs(dot(viewDir, norm)), 2.0);
+                    // Pulsing displacement
+                    float disp = sin(position.x*10.+uTime*2.)*0.03 * uIntensity;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal*disp, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vPos; varying float vFresnel; uniform float uTime; uniform float uIntensity; uniform vec3 uColorCore; uniform vec3 uColorHot;
+                void main() {
+                    float pulse = sin(uTime*3.)*0.5+0.5;
+                    vec3 col = mix(uColorHot, uColorCore, pulse*0.5);
+                    col += uColorCore * vFresnel * 1.5;
+                    gl_FragColor = vec4(col, 0.85*uIntensity);
+                }
+            `
+        });
+        const orb = new THREE.Mesh(new THREE.IcosahedronGeometry(0.25, 4), orbMat);
+        artifactGroup.add(orb);
+
+        // 3. PHONE
+        const phoneGroup = new THREE.Group();
+        scene.add(phoneGroup);
+        phoneGroup.visible = false;
+
+        const phoneBody = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.4, 0.06), new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.3, metalness: 0.8 }));
+        phoneGroup.add(phoneBody);
+
+        const screenCanvas = document.createElement('canvas');
+        screenCanvas.width = 512; screenCanvas.height = 1024;
+        const ctx = screenCanvas.getContext('2d');
+        const screenTex = new THREE.CanvasTexture(screenCanvas);
+        const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.12, 2.3), new THREE.MeshBasicMaterial({ map: screenTex, transparent: true }));
+        screenMesh.position.z = 0.035;
+        phoneGroup.add(screenMesh);
+
+        // NFC Particles
+        const arcCount = 60;
+        const arcGeo = new THREE.BufferGeometry();
+        const arcPos = new Float32Array(arcCount * 3);
+        arcGeo.setAttribute('position', new THREE.BufferAttribute(arcPos, 3));
+        const arcParts = new THREE.Points(arcGeo, new THREE.PointsMaterial({ color: config.colors.magicCore, size: 0.04, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }));
+        scene.add(arcParts);
+
+        updateLoader(90);
+
+        // Load Marcus Image
+        const marcusImg = new Image();
+        marcusImg.src = 'src/assets/marcus.jpeg';
+        let marcusLoaded = false;
+        marcusImg.onload = () => { marcusLoaded = true; };
+
+        // === RENDER HELPERS ===
+        function drawScreen(brightness, time, connected) {
+            ctx.fillStyle = `rgb(${brightness * 10}, ${brightness * 12}, ${brightness * 15})`;
+            ctx.fillRect(0, 0, 512, 1024);
+            if (brightness < 0.01) { screenTex.needsUpdate = true; return; }
+
+            ctx.globalAlpha = brightness;
+
+            // Marcus Image
+            if (marcusLoaded) {
+                // Draw image with "cover" behavior
+                const imgAspect = marcusImg.width / marcusImg.height;
+                const canvasAspect = 512 / 1024;
+                let drawW, drawH, drawX, drawY;
+
+                if (imgAspect > canvasAspect) {
+                    drawH = 1024;
+                    drawW = 1024 * imgAspect;
+                    drawX = (512 - drawW) / 2;
+                    drawY = 0;
+                } else {
+                    drawW = 512;
+                    drawH = 512 / imgAspect;
+                    drawX = 0;
+                    drawY = (1024 - drawH) / 2;
+                }
+                ctx.drawImage(marcusImg, drawX, drawY, drawW, drawH);
+
+                // Subtle dark overlay to keep UI readable
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.fillRect(0, 0, 512, 1024);
+            } else {
+                // Fallback silhouette if image not loaded
+                ctx.fillStyle = '#151515';
+                ctx.beginPath(); ctx.ellipse(256, 400, 90, 110, 0, 0, 6.28); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(80, 1024); ctx.lineTo(80, 650); ctx.quadraticCurveTo(256, 480, 432, 650); ctx.lineTo(432, 1024); ctx.fill();
+            }
+
+            // Waveform
+            ctx.strokeStyle = '#d4c5a3';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            const amp = connected ? 50 + Math.sin(time * 15) * 30 : 5;
+            for (let x = 50; x < 462; x += 10) {
+                const y = 820 + Math.sin(x * 0.04 + time * 6) * amp * Math.sin((x - 50) / 412 * 3.14);
+                if (x == 50) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Voice Button - Premium Refined
+            const btnY = 925;
+            const btnR = 45;
+            const pulse = connected ? 1 + Math.sin(time * 5) * 0.08 : 1;
+
+            // Button Glow
+            if (connected) {
+                const grad = ctx.createRadialGradient(256, btnY, 0, 256, btnY, btnR * 2.2 * pulse);
+                grad.addColorStop(0, 'rgba(176, 132, 204, 0.5)');
+                grad.addColorStop(1, 'rgba(176, 132, 204, 0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(256, btnY, btnR * 2.2 * pulse, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Button Circle
+            ctx.beginPath();
+            ctx.arc(256, btnY, btnR * pulse, 0, Math.PI * 2);
+            ctx.fillStyle = connected ? '#b084cc' : 'rgba(255,255,255,0.08)';
+            ctx.fill();
+            ctx.strokeStyle = connected ? '#fff' : 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Perfectly Symmetrical Mic Icon
+            ctx.save();
+            ctx.translate(256, btnY - 2); // Visual center adjustment
+            ctx.scale(pulse, pulse);
+
+            ctx.fillStyle = '#fff';
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // 1. Mic Capsule (Centered)
+            ctx.beginPath();
+            ctx.moveTo(-9, -10);
+            ctx.arc(0, -10, 9, Math.PI, 0); // Top
+            ctx.lineTo(9, 6);
+            ctx.arc(0, 6, 9, 0, Math.PI); // Bottom
+            ctx.closePath();
+            ctx.fill();
+
+            // 2. Mic Cradle (U-shape)
+            ctx.beginPath();
+            ctx.arc(0, 6, 16, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+
+            // 3. Mic Stem
+            ctx.beginPath();
+            ctx.moveTo(0, 22);
+            ctx.lineTo(0, 28);
+            ctx.stroke();
+
+            ctx.restore();
+
+            // UI Text
+            ctx.shadowBlur = 20; ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.fillStyle = '#fff'; ctx.font = '500 38px serif'; ctx.textAlign = 'center'; ctx.fillText('Marcus Aurelius', 256, 150);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(212, 197, 163, 0.9)'; ctx.font = '600 22px sans-serif'; ctx.letterSpacing = '2px';
+            if (connected) ctx.fillText('LIVE CONVERSATION', 256, 210);
+
+            ctx.globalAlpha = 1; screenTex.needsUpdate = true;
+        }
+
+        function updateFragments(integrity) {
+            const explosion = 1 - integrity;
+
+            // Update dust particles
+            if (explosion > 0.1) {
+                dustMat.opacity = Math.min(explosion * 0.8, 0.6);
+                const dustPos = dustParticles.geometry.attributes.position.array;
+                for (let i = 0; i < dustCount; i++) {
+                    const vel = dustVelocities[i];
+                    dustPos[i * 3] += vel.x * explosion * 0.05;
+                    dustPos[i * 3 + 1] += vel.y * explosion * 0.03;
+                    dustPos[i * 3 + 2] += vel.z * explosion * 0.04;
+                }
+                dustParticles.geometry.attributes.position.needsUpdate = true;
+            } else {
+                dustMat.opacity = 0;
+                // Reset dust positions
+                const dustPos = dustParticles.geometry.attributes.position.array;
+                for (let i = 0; i < dustCount; i++) {
+                    dustPos[i * 3] = (Math.random() - 0.5) * 2;
+                    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 1.5;
+                    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 1;
+                }
+                dustParticles.geometry.attributes.position.needsUpdate = true;
+            }
+
+            fragments.forEach(f => {
+                const expl = Math.max(0, explosion - f.userData.delay);
+                if (expl > 0) {
+                    // Eased explosion progress for smoother motion
+                    const easedExpl = 1 - Math.pow(1 - Math.min(expl * 1.2, 1), 3); // Ease out cubic
+
+                    // Distance with gravity influence
+                    const dist = easedExpl * 5 * f.userData.speed;
+                    const gravityOffset = easedExpl * easedExpl * f.userData.gravity * 2;
+
+                    // Position
+                    const newPos = f.userData.pos.clone().add(f.userData.dir.clone().multiplyScalar(dist));
+                    newPos.y -= gravityOffset; // Gravity pulls down
+                    f.position.copy(newPos);
+
+                    // Tumbling rotation
+                    f.rotation.x = f.userData.initialRot.x + easedExpl * f.userData.tumbleX;
+                    f.rotation.y = f.userData.initialRot.y + easedExpl * f.userData.tumbleY;
+                    f.rotation.z = f.userData.initialRot.z + easedExpl * f.userData.tumbleZ;
+
+                    // Scale fades out more elegantly
+                    const scaleFade = Math.max(0, 1 - easedExpl * 0.9);
+                    f.scale.setScalar(scaleFade);
+
+                    // Fade material opacity for disappearing effect
+                    if (f.material.transparent !== true) {
+                        f.material.transparent = true;
+                    }
+                    f.material.opacity = Math.max(0, 1 - easedExpl * 1.1);
+
+                    f.visible = easedExpl < 0.95;
+                } else {
+                    f.position.copy(f.userData.pos);
+                    f.rotation.copy(f.userData.initialRot);
+                    f.scale.setScalar(1);
+                    f.material.opacity = 1;
+                    f.visible = true;
+                }
+            });
+        }
+
+        // === GSAP TIMELINE ===
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Reveal
+        gsap.to('.loader', { opacity: 0, duration: 1, delay: 0.5, onComplete: () => document.getElementById('loader').style.display = 'none' });
+        gsap.to(['.brand', '.edition-tag', '.hero-content'], { opacity: 1, y: 0, duration: 1, delay: 0.8, stagger: 0.1 });
+        gsap.to(cuboidGlow, { intensity: 0.8, duration: 2, delay: 1 });
+
+        const tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1 } });
+
+        // 1. Break Stone (0-25%)
+        tl.to(state, { cuboidIntegrity: 0, onUpdate: () => updateFragments(state.cuboidIntegrity) }, 0.05);
+        tl.to(cuboidGlow, { intensity: 0 }, 0.12);
+
+        // 2. Reveal Pendant (Overlapped with breaking)
+        tl.call(() => {
+            artifactGroup.visible = true;
+            artifactGroup.scale.set(0.1, 0.1, 0.1);
+        }, null, 0.08);
+        tl.to(artifactGroup.scale, { x: 1, y: 1, z: 1, ease: "power2.out" }, 0.08);
+        tl.to(state, { artifactReveal: 1 }, 0.1);
+        tl.to(orb.material.uniforms.uIntensity, { value: 1 }, 0.1);
+
+        // 3. Prep Stage (30-55%)
+        tl.to(artifactGroup.rotation, { y: 2.5 }, 0.4);
+        tl.call(() => { phoneGroup.visible = true; phoneGroup.position.set(0, -6, 2); }, null, 0.4);
+
+        // 4. INTERACTION (55-80%)
+        tl.to('#connection-text', { opacity: 0, duration: 0.02 }, 0.55);
+
+        // Approach
+        tl.to(camera.position, { z: 6 }, 0.55);
+        tl.to(phoneGroup.position, { y: -0.3, z: 3.5, x: 0.1 }, 0.55);
+        tl.to(phoneGroup.rotation, { x: -0.1, y: -0.15 }, 0.55);
+        tl.to(artifactGroup.position, { x: -0.3, y: 0.1, z: 1 }, 0.55);
+
+        // Contact
+        tl.to(state, { nfcConnection: 1 }, 0.62);
+        tl.to(nfcLight, { intensity: 3 }, 0.62);
+        tl.to('#nfc-flash', { opacity: 0.5, yoyo: true, repeat: 1 }, 0.62);
+        tl.to(state, { screenBrightness: 1 }, 0.63);
+
+        // 5. RESTING POSITION (The Duo Shot) - 80%
+        // We move them so both are visible. 
+        // Phone moves right (x: 0.8), Pendant moves left (x: -0.8)
+        tl.to(phoneGroup.position, { x: 0.8, y: 0, z: 2 }, 0.75);
+        tl.to(phoneGroup.rotation, { y: -0.2 }, 0.75);
+
+        tl.to(artifactGroup.position, { x: -0.8, y: 0.2, z: 1 }, 0.75);
+        tl.to(artifactGroup.rotation, { y: 0.5 }, 0.75);
+
+        tl.to(camera.position, { z: 7.5 }, 0.75); // Frame them
+
+        tl.to(state, { nfcConnection: 0 }, 0.78);
+        tl.to(nfcLight, { intensity: 0 }, 0.78);
+
+        // 6. Oracle Card
+        tl.to('#oracle-card', { opacity: 1, y: 0 }, 0.82);
+
+        // Video Entry
+        const vidTl = gsap.timeline({ scrollTrigger: { trigger: ".video-section", start: "top 70%" } });
+        vidTl.to(".video-container", { opacity: 1, y: 0, duration: 1 });
+        vidTl.to(".video-caption", { opacity: 1 }, "-=0.5");
+
+        // Purchase Bar
+        const buyTl = gsap.timeline({ scrollTrigger: { trigger: ".video-section", start: "center bottom" } });
+        buyTl.to('#purchase-bar', { y: 0, onStart: () => document.getElementById('purchase-bar').classList.add('visible') });
+
+        // === RENDER LOOP ===
+        const clock = new THREE.Clock();
+        function animate() {
+            state.time = clock.getElapsedTime();
+
+            // Mouse Parallax
+            state.mouse.x += (state.targetMouse.x - state.mouse.x) * 0.05;
+            state.mouse.y += (state.targetMouse.y - state.mouse.y) * 0.05;
+            mainGroup.rotation.y = state.mouse.x * 0.08;
+            mainGroup.rotation.x = state.mouse.y * 0.08;
+
+            // Artifact Animation
+            if (artifactGroup.visible) {
+                // Gentle Sway
+                artifactGroup.position.y += Math.sin(state.time) * 0.001;
+                // Update Shader
+                orb.material.uniforms.uTime.value = state.time;
+            }
+
+            // Phone Screen
+            if (phoneGroup.visible) {
+                drawScreen(state.screenBrightness, state.time, state.nfcConnection > 0.5);
+
+                // NFC Arcs
+                if (state.nfcConnection > 0) {
+                    const p1 = new THREE.Vector3(); artifactGroup.getWorldPosition(p1);
+                    const p2 = new THREE.Vector3(); phoneGroup.getWorldPosition(p2);
+                    const pos = arcParts.geometry.attributes.position.array;
+                    for (let i = 0; i < arcCount; i++) {
+                        const t = i / arcCount;
+                        const v = new THREE.Vector3().lerpVectors(p1, p2, t);
+                        v.x += (Math.random() - 0.5) * 0.2; v.y += (Math.random() - 0.5) * 0.3;
+                        pos[i * 3] = v.x; pos[i * 3 + 1] = v.y; pos[i * 3 + 2] = v.z;
+                    }
+                    arcParts.geometry.attributes.position.needsUpdate = true;
+                    arcParts.material.opacity = state.nfcConnection;
+                } else {
+                    arcParts.material.opacity = 0;
+                }
+            }
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('mousemove', e => {
+            state.targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            state.targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            // Magnetic button
+            const btn = document.getElementById('magnetic-btn');
+            if (btn) {
+                const r = btn.getBoundingClientRect();
+                const dist = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+                if (dist < 100) gsap.to(btn, { x: (e.clientX - (r.left + r.width / 2)) * 0.3, y: (e.clientY - (r.top + r.height / 2)) * 0.3, duration: 0.5 });
+                else gsap.to(btn, { x: 0, y: 0, duration: 0.5 });
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+
+    <script>
+        // === LANGUAGE SWITCHER ===
+        const translations = {
+            it: {
+                heroTitle1: "Indossa",
+                heroTitle2: "la Leggenda",
+                heroTagline: "Filosofia da toccare con mano",
+                stoneEyebrow: "La Barriera",
+                stoneTitle: "Forgiato nell'<br>Eternità",
+                stoneText: "Scolpito nel basalto vulcanico. <strong>Grigio. Denso. Irremovibile.</strong> Un monumento al peso della storia che portiamo, in attesa di essere infranto.",
+                artifactEyebrow: "L'Artefatto",
+                artifactTitle: "Viola<br>Vivente",
+                artifactText: "Sospeso nel peltro, un nucleo di <strong>energia luminescente</strong> pulsa al ritmo del pensiero. Non brilla soltanto; comunica.",
+                connectionEyebrow: "La Connessione",
+                connectionTitle: "Risveglia<br>il Mentore",
+                connectionText: "Avvicina il tuo telefono per colmare il divario.",
+                oracleEyebrow: "L'Oracolo Parla",
+                oracleQuote: "\"Hai potere sulla tua mente, non sugli eventi esterni. Realizzalo e troverai la forza.\"",
+                btnTalk: "Parla con Marco →",
+                videoCaption: "L'Artefatto in Movimento",
+                purchaseTitle: "L'Artefatto — Serie Uno",
+                purchaseMeta: "Limitato a 100 pezzi · Spedizione Feb 2026",
+                purchaseBtn: "Fallo Tuo — $299"
+            },
+            en: {
+                heroTitle1: "Wear",
+                heroTitle2: "the Legend",
+                heroTagline: "Philosophy you can touch",
+                stoneEyebrow: "The Barrier",
+                stoneTitle: "Forged in<br>Eternity",
+                stoneText: "Hewn from volcanic basalt. <strong>Grey. Dense. Unyielding.</strong> A monument to the weight of history we carry, waiting to be shattered.",
+                artifactEyebrow: "The Artifact",
+                artifactTitle: "Living<br>Violet",
+                artifactText: "Suspended in pewter, a core of <strong>luminescent energy</strong> pulses with the rhythm of thought. It doesn't just glow; it communicates.",
+                connectionEyebrow: "The Connection",
+                connectionTitle: "Awaken<br>The Mentor",
+                connectionText: "Bring your phone close to bridge the gap.",
+                oracleEyebrow: "The Oracle Speaks",
+                oracleQuote: "\"You have power over your mind—not outside events. Realize this, and you will find strength.\"",
+                btnTalk: "Talk to Marcus →",
+                videoCaption: "Artifact in Motion",
+                purchaseTitle: "The Artifact — Series One",
+                purchaseMeta: "Limited to 100 pieces · Ships Feb 2026",
+                purchaseBtn: "Own It — $299"
+            }
+        };
+
+        let currentLang = 'it';
+        const langToggle = document.getElementById('lang-toggle');
+
+        if (langToggle) {
+            langToggle.addEventListener('click', () => {
+                currentLang = currentLang === 'it' ? 'en' : 'it';
+                updateLanguage(currentLang);
+            });
+        }
+
+        function updateLanguage(lang) {
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerHTML = t[key];
+                }
+            });
+            // Update button style
+            if (langToggle) {
+                langToggle.style.color = lang === 'it' ? '#e8e8e8' : '#888890';
+                langToggle.textContent = lang === 'it' ? 'IT / EN' : 'EN / IT';
+            }
+        }
+    </script>
+</body>
+
+</html>

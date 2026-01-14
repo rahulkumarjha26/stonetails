@@ -1,0 +1,7 @@
+{
+  "name": "Marcus Aurelius Live",
+  "description": "A real-time voice conversation with the Stoic Emperor Marcus Aurelius using Gemini Live API.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
